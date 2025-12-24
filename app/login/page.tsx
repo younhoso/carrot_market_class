@@ -4,12 +4,19 @@ import FormButton from "@/components/ui/button";
 import FormInput from "@/components/ui/input";
 import SocialLogin from "@/components/ui/social-login";
 import { useFormState } from "react-dom";
-import handleForm, { FormState } from "./actions";
+import login from "./actions";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
-const initialState: FormState = { error: null };
+const initialErrorState = {
+  formErrors: [],
+  fieldErrors: {
+    email: [],
+    password: [],
+  },
+};
 
 export default function LogIn() {
-  const [state, action, isPending] = useFormState(handleForm, initialState);
+  const [state, dispatch, isPending] = useFormState(login, initialErrorState);
 
   return (
     <div className="flex flex-col gap-10 py-8 px-6">
@@ -17,13 +24,21 @@ export default function LogIn() {
         <h1 className="text-2xl">안녕하세요!</h1>
         <h2 className="text-xl">Log in with email and password.</h2>
       </div>
-      <form action={action} className="flex flex-col gap-3">
-        <FormInput name="email" type="email" placeholder="Email" required />
+      <form action={dispatch} className="flex flex-col gap-3">
+        <FormInput
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
+          errors={state?.fieldErrors.email}
+        />
         <FormInput
           name="password"
           type="password"
           placeholder="Password"
           required
+          minLength={PASSWORD_MIN_LENGTH}
+          errors={state?.fieldErrors.password}
         />
         <FormButton text="Log in" />
       </form>
